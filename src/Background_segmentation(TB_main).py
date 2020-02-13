@@ -36,7 +36,7 @@ def main_f(path):
     
     # Change directory
     try:
-        w_dir = os.chdir(path)
+        os.chdir(path)
     # Error handling
     except  OSError:
         sys.exit("Invalid path.")
@@ -72,8 +72,9 @@ def main_f(path):
         
         
         # Show resulting frames
-        cv.imshow('Foreground', res2)
-        
+        # cv.imshow('Foreground', res2)
+        cv.drawContours(res, contours, -1, (0, 0, 255), 2)
+        cv.imshow('Contours', res)
         
         # To break, press the q key
         if cv.waitKey(1) & 0xFF == ord('q'):
@@ -134,7 +135,8 @@ def imBackSub(path):
         # Initialize output frame array
         fg = np.zeros_like(frame, dtype=np.uint8)
         
-        fg = np.where(fr_diff > thresh, frame, np.uint8(0))
+        # Threshold background subtraction
+        fg = np.where(fr_diff > thresh, np.uint8(frame), np.uint8(0))
         
         # INFO: Slow performance with the code below
         # # Loop though frame's dimensions
@@ -150,11 +152,12 @@ def imBackSub(path):
         # Set current frame as background frame for next iteration
         bg_frame = frame
         
+        # Return foreground & updated background
         return (np.array([fg, bg_frame]))
     
     # Change directory
     try:
-        w_dir = os.chdir(path)
+       os.chdir(path)
     # Error handling
     except  OSError:
         sys.exit("Invalid path.")
@@ -166,7 +169,7 @@ def imBackSub(path):
     bg_frame = cv.imread('000001.jpg')
     
     # Background subtraction threshold
-    thresh = 20
+    thresh = 250
     
     while True:
         # Capture frame-by-frame
@@ -177,7 +180,7 @@ def imBackSub(path):
             break
         
         (res2, bg_frame) = BackSub(frame, bg_frame, thresh)
-        i = 1
+        
         # Show resulting frames
         cv.imshow('Foreground', res2)
         
@@ -192,11 +195,10 @@ def imBackSub(path):
 if __name__ == '__main__':
     # Windows specific path
     if sys.platform.startswith('win32'):
-        # Image directory
         init_path = "D:\Projects\MOTSChallenge2020\dataset\MOTSChallenge\\train\images\\"
     
     # Linux specific path
-    else:
+    elif sys.platform.startswith('linux'):
         init_path = '/home/iason/Projects/MOTSChallenge2020/dataset/MOTSChallenge/train/images/'
     
     # Sub-directories tuple
