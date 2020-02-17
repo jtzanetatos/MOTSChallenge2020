@@ -12,6 +12,7 @@ import cv2 as cv
 import os
 import sys
 from sklearn.cluster import KMeans
+from skimage.morphology import medial_axis
 
 # Windows specific path
 if sys.platform.startswith('win32'):
@@ -75,13 +76,13 @@ while True:
     res = cv.bitwise_and(frame,frame, mask= fgmask)
     
     # Morphologically dilate current frame
-    e_im = cv.dilate(fgmask, kernel, iterations = 1)
+    # e_im = cv.dilate(fgmask, kernel, iterations = 1)
     
     # Morphologically close current frame
-    e_im = cv.morphologyEx(e_im, cv.MORPH_CLOSE, kernel)
+    # e_im = cv.morphologyEx(e_im, cv.MORPH_CLOSE, kernel)
     
     # Evaluate & capture each entire silhouettes
-    contours, hierarchy = cv.findContours(e_im, cv.RETR_EXTERNAL,
+    contours, hierarchy = cv.findContours(fgmask, cv.RETR_EXTERNAL,
                                           cv.CHAIN_APPROX_SIMPLE)
     
     # Remove contours that are lower than threshold's value
@@ -111,6 +112,12 @@ while True:
         
         # Isolate selected contour in current frame
         tmp_frame = cv.bitwise_and(frame, frame, mask=temp_mask)
+        
+        # Evaluate skeleton of current contour
+        skel, distance = medial_axis(temp_mask, return_distance=True)
+        
+        # Distance to the background for pixels of the skeleton
+        dist_on_skel = distance * skel
         
         # Approach 1: K-means on histogram
         # Initialize histogram array of each colour channel
@@ -173,7 +180,7 @@ while True:
         # res_cnt = kmeans_cv(tmp_frame, n_clusters)
     # Perform bitwise and operation using the morphological processed frame as
     # a mask
-    res2 = cv.bitwise_and(frame,frame, mask = e_im)
+    # res2 = cv.bitwise_and(frame,frame, mask = fgmask)
     
     
     # Show resulting frames
