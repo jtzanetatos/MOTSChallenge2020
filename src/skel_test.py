@@ -14,7 +14,7 @@ import cv2 as cv
 import open3d as o3d
 
 # Test frame's path
-path = '/home/iason/Projects/MOTSChallenge2020/0test_frame.jpg'
+path = '0test_frame.jpg'
 
 # Read test frame
 img = cv.imread(path)
@@ -62,13 +62,13 @@ dist_on_skel = distance * skel
 ## Approach 6: Normalize distance &apply Low Pass FIR Filter
 
 # Normalize distance; min values can be omited
-# dist_norm = (distance - np.min(distance)) / (np.max(distance) - np.min(distance))
+dist_norm = (distance - np.min(distance)) / (np.max(distance) - np.min(distance))
 
-# # Apply theshold/ FIR operation
-# dist_norm = np.where(dist_norm >=0.8, np.float32(0), dist_norm)
+# Apply theshold/ FIR operation
+dist_norm = np.where(dist_norm >=0.8, np.float32(0), dist_norm)
 
-# # Evaluate mask
-# skel_mask = np.uint8((dist_norm * 100) * skel)
+# Evaluate mask
+skel_mask = np.uint8((dist_norm * 100) * skel)
 
-# # Apply mask on current frame
-# skel_frame = cv.bitwise_and(img, img, mask=skel_mask)
+# Apply mask on current frame
+skel_frame = cv.bitwise_and(img, img, mask=skel_mask)
