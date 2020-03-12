@@ -14,7 +14,7 @@ import cv2 as cv
 import open3d as o3d
 
 # Test frame's path
-path = '/home/iason/Projects/MOTSChallenge2020/0test_frame.jpg'
+path = '0test_frame.jpg'
 
 # Read test frame
 img = cv.imread(path)
