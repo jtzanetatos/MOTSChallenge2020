@@ -12,9 +12,29 @@ import matplotlib.pyplot as plt
 import skimage.morphology as morph
 import cv2 as cv
 import open3d as o3d
+import os
+import sys
+
+# Get current working directoy; OS independent. Must change dir to parent
+w_dir = os.path.dirname(os.getcwd())
+
+# Windows specific path
+if sys.platform.startswith('win32'):
+    init_path = os.path.join(w_dir, "dataset\test_case_frames\\")
+
+# Linux specific path
+elif sys.platform.startswith('linux'):
+    init_path = os.path.join(w_dir, 'dataset/test_case_frames/')
+
+try:
+    os.chdir(init_path)
+# Error handling
+except  OSError:
+    sys.exit("Invalid path.")
+
 
 # Test frame's path
-path = '0test_frame.jpg'
+path = 'multi_cluster_case.jpg'
 
 # Read test frame
 img = cv.imread(path)
