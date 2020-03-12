@@ -14,13 +14,16 @@ import sys
 from sklearn.cluster import KMeans
 from skimage.morphology import medial_axis
 
+# Get current working directoy; OS independent. Must change dir to parent
+w_dir = os.path.dirname(os.getcwd())
+
 # Windows specific path
 if sys.platform.startswith('win32'):
-    init_path = "D:\Projects\MOTSChallenge2020\dataset\MOTSChallenge\\train\images\\"
+    init_path = os.path.join(w_dir, "dataset\MOTSChallenge\\train\images\\")
 
 # Linux specific path
 elif sys.platform.startswith('linux'):
-    init_path = '/home/iason/Projects/MOTSChallenge2020/dataset/MOTSChallenge/train/images/'
+    init_path = os.path.join(w_dir, 'dataset/MOTSChallenge/train/images/')
 
 # Sub-directories tuple
 # TODO: implement non-stationary sequencies
@@ -100,32 +103,32 @@ while True:
         num = num + 1
     
     # Loop though each contour's mask
-    for i in range(len(contours)):
-        # Select current contour
-        temp_cnt = contours[i]
+    # for i in range(len(contours)):
+    #     # Select current contour
+    #     temp_cnt = contours[i]
         
-        # Initialize mask
-        temp_mask = np.zeros((height, width), dtype=np.uint8)
+    #     # Initialize mask
+    #     temp_mask = np.zeros((height, width), dtype=np.uint8)
         
-        # Evaluate mask of current contour
-        temp_mask = cv.drawContours(temp_mask, [temp_cnt], 0, 255, -1)
+    #     # Evaluate mask of current contour
+    #     temp_mask = cv.drawContours(temp_mask, [temp_cnt], 0, 0, -1)
         
-        # Isolate selected contour in current frame
-        tmp_frame = cv.bitwise_and(frame, frame, mask=temp_mask)
+    #     # Isolate selected contour in current frame
+    #     tmp_frame = cv.bitwise_and(frame, frame, mask=temp_mask)
         
         # Evaluate skeleton of current contour
-        skel, distance = medial_axis(temp_mask, return_distance=True)
+        # skel, distance = medial_axis(temp_mask, return_distance=True)
         
         # Distance to the background for pixels of the skeleton
-        dist_on_skel = distance * skel
+        # dist_on_skel = distance * skel
         
         # Approach 1: K-means on histogram
         # Initialize histogram array of each colour channel
-        hist = np.zeros((255, 3), dtype=np.uint32)
-        for c in range(col):
-            # Evaluate histogram; 255 due to Red contour draw(Red channel only.
-            hist[:, c] = np.reshape(cv.calcHist([frame], [c], temp_mask, [255], [0, 255]),
-                                    (255))
+        # hist = np.zeros((255, 3), dtype=np.uint32)
+        # for c in range(col):
+        #     # Evaluate histogram; 255 due to Red contour draw(Red channel only.
+        #     hist[:, c] = np.reshape(cv.calcHist([frame], [c], temp_mask, [255], [0, 255]),
+        #                             (255))
             
             # # Apporach 1.1: Find optimal number of clusters
             # # TODO: Implement cluster estimator; for loop & array sizes.
@@ -185,7 +188,7 @@ while True:
     
     # Show resulting frames
     # cv.imshow('Foreground', res2)
-    cv.drawContours(res, contours, -1, (0, 0, 255), 2)
+    cv.drawContours(res, contours, -1, (0, 0, 0), 2)
     cv.imshow('Contours', res)
     
     # To break, press the q key
