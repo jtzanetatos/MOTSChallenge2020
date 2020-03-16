@@ -12,29 +12,9 @@ import matplotlib.pyplot as plt
 import skimage.morphology as morph
 import cv2 as cv
 import open3d as o3d
-import os
-import sys
-
-# Get current working directoy; OS independent. Must change dir to parent
-w_dir = os.path.dirname(os.getcwd())
-
-# Windows specific path
-if sys.platform.startswith('win32'):
-    init_path = os.path.join(w_dir, "dataset\test_case_frames\\")
-
-# Linux specific path
-elif sys.platform.startswith('linux'):
-    init_path = os.path.join(w_dir, 'dataset/test_case_frames/')
-
-try:
-    os.chdir(init_path)
-# Error handling
-except  OSError:
-    sys.exit("Invalid path.")
-
 
 # Test frame's path
-path = 'multi_cluster_case.jpg'
+path = '0test_frame.jpg'
 
 # Read test frame
 img = cv.imread(path)
@@ -82,7 +62,7 @@ dist_on_skel = distance * skel
 ## Approach 6: Normalize distance &apply Low Pass FIR Filter
 
 # Normalize distance; min values can be omited
-dist_norm = (distance - np.min(distance)) / (np.max(distance) - np.min(distance))
+dist_norm = (distance - distance.min()) / (distance.max() - distance.min())
 
 # Apply theshold/ FIR operation
 dist_norm = np.where(dist_norm >=0.8, np.float32(0), dist_norm)

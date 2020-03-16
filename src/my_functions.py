@@ -799,17 +799,21 @@ def frame_proc(frame, fgmask, kernel, contour_size):
                         
                         contours: The detected contous of current frame
     '''
+    
+    # Perform bitwise and operation using the morphological processed frame as
+    # a mask
+    res = cv.bitwise_and(frame,frame, mask = fgmask)
     # Self bitwise operation on current frame
-    res = cv.bitwise_and(frame,frame, mask= fgmask)
+    # res = cv.bitwise_and(frame,frame, mask=fgmask)
     
     # Morphologically dilate current frame
-    e_im = cv.dilate(fgmask, kernel, iterations = 1)
+    # e_im = cv.dilate(fgmask, kernel, iterations = 1)
     
     # Morphologically close current frame
-    e_im = cv.morphologyEx(e_im, cv.MORPH_CLOSE, kernel)
+    # e_im = cv.morphologyEx(e_im, cv.MORPH_CLOSE, kernel)
     
     # Evaluate & capture each entire silhouettes
-    contours, hierarchy = cv.findContours(e_im, cv.RETR_EXTERNAL,
+    contours, hierarchy = cv.findContours(fgmask, cv.RETR_EXTERNAL,
                                           cv.CHAIN_APPROX_SIMPLE)
     
     # Remove contours that are lower than threshold's value
@@ -826,12 +830,9 @@ def frame_proc(frame, fgmask, kernel, contour_size):
         del contours[i - num]
         num = num + 1
     
-    # Perform bitwise and operation using the morphological processed frame as
-    # a mask
-    res2 = cv.bitwise_and(frame,frame, mask = e_im)
     
     # Implement outputs as a pandas Series object
-    out = pd.Series((res2, res, contours))
+    out = pd.Series((res, contours))
     
     # Return resulting frames and detected contours
     return(out)

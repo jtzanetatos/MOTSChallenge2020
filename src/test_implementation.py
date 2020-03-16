@@ -14,16 +14,13 @@ import sys
 from sklearn.cluster import KMeans
 from skimage.morphology import medial_axis
 
-# Get current working directoy; OS independent. Must change dir to parent
-w_dir = os.path.dirname(os.getcwd())
-
 # Windows specific path
 if sys.platform.startswith('win32'):
-    init_path = os.path.join(w_dir, "dataset\MOTSChallenge\\train\images\\")
+    init_path = "D:\Projects\MOTSChallenge2020\dataset\MOTSChallenge\\train\images\\"
 
 # Linux specific path
 elif sys.platform.startswith('linux'):
-    init_path = os.path.join(w_dir, 'dataset/MOTSChallenge/train/images/')
+    init_path = '/home/iason/Projects/MOTSChallenge2020/dataset/MOTSChallenge/train/images/'
 
 # Sub-directories tuple
 # TODO: implement non-stationary sequencies
@@ -45,6 +42,9 @@ except  OSError:
 # Initialize frame stream source
 cap = cv.VideoCapture('%6d.jpg')
 
+# Evaluate frame stream dimensions
+height, width, col = np.shape(cv.imread('000001.jpg'))
+
 # 9 by 9 rectangular window for morph operators
 kernel = np.ones((9, 9), dtype=np.uint8) 
 # Zivkovic MOG
@@ -53,8 +53,6 @@ fgbg = cv.createBackgroundSubtractorMOG2(detectShadows = False)
 # contours px size to accept
 contour_size = 60
 
-# Frame shape flag
-flg_shp = True
 
 while True:
     # Capture frame-by-frame
@@ -64,25 +62,12 @@ while True:
     if not ret:
         break
     
-    # Evaluate frame's shape
-    if flg_shp:
-        height, width, col = np.shape(frame)
-        
-        # Set flag status to false
-        flg_shp = False
-    
     # Evaluate foreground mask
     fgmask = fgbg.apply(frame)
     
     # Image processing function
     # Self bitwise operation on current frame
     res = cv.bitwise_and(frame,frame, mask= fgmask)
-    
-    # Morphologically dilate current frame
-    # e_im = cv.dilate(fgmask, kernel, iterations = 1)
-    
-    # Morphologically close current frame
-    # e_im = cv.morphologyEx(e_im, cv.MORPH_CLOSE, kernel)
     
     # Evaluate & capture each entire silhouettes
     contours, hierarchy = cv.findContours(fgmask, cv.RETR_EXTERNAL,
@@ -102,33 +87,31 @@ while True:
         del contours[i - num]
         num = num + 1
     
-    # Loop though each contour's mask
+    # # Loop though each contour's mask
     # for i in range(len(contours)):
-    #     # Select current contour
-    #     temp_cnt = contours[i]
-        
     #     # Initialize mask
     #     temp_mask = np.zeros((height, width), dtype=np.uint8)
         
     #     # Evaluate mask of current contour
-    #     temp_mask = cv.drawContours(temp_mask, [temp_cnt], 0, 0, -1)
+    #     temp_mask = cv.drawContours(temp_mask, contours, i, 255, -1)
         
     #     # Isolate selected contour in current frame
     #     tmp_frame = cv.bitwise_and(frame, frame, mask=temp_mask)
         
-        # Evaluate skeleton of current contour
-        # skel, distance = medial_axis(temp_mask, return_distance=True)
         
-        # Distance to the background for pixels of the skeleton
-        # dist_on_skel = distance * skel
+    #     # Evaluate skeleton of current contour
+    #     skel, distance = medial_axis(temp_mask, return_distance=True)
         
-        # Approach 1: K-means on histogram
-        # Initialize histogram array of each colour channel
-        # hist = np.zeros((255, 3), dtype=np.uint32)
-        # for c in range(col):
-        #     # Evaluate histogram; 255 due to Red contour draw(Red channel only.
-        #     hist[:, c] = np.reshape(cv.calcHist([frame], [c], temp_mask, [255], [0, 255]),
-        #                             (255))
+    #     # Distance to the background for pixels of the skeleton
+    #     dist_on_skel = distance * skel
+        
+    #     # Approach 1: K-means on histogram
+    #     # Initialize histogram array of each colour channel
+    #     hist = np.zeros((255, 3), dtype=np.uint32)
+    #     for c in range(col):
+    #         # Evaluate histogram; 255 due to Red contour draw(Red channel only.
+    #         hist[:, c] = np.reshape(cv.calcHist([frame], [c], temp_mask, [255], [0, 255]),
+    #                                 (255))
             
             # # Apporach 1.1: Find optimal number of clusters
             # # TODO: Implement cluster estimator; for loop & array sizes.

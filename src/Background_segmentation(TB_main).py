@@ -68,12 +68,11 @@ def main_f(path):
         fgmask = fgbg.apply(frame)
         
         # Image processing function
-        (res2, res, contours) = f.frame_proc(frame, fgmask, kernel, contour_size)
-        
+        (res, contours) = f.frame_proc(frame, fgmask, kernel, contour_size)
         
         # Show resulting frames
         # cv.imshow('Foreground', res2)
-        cv.drawContours(res, contours, -1, (0, 0, 255), 2)
+        cv.drawContours(res, contours, -1, (0, 0, 0), 2)
         cv.imshow('Contours', res)
         
         # To break, press the q key
@@ -203,7 +202,7 @@ if __name__ == '__main__':
     
     # Sub-directories tuple
     # TODO: implement non-stationary sequencies
-    dirs = ('0002', '0009')
+    dirs = ('0002', '0005', '0009', '0011')
     
     # Loop through each sub-directory
     for i in dirs:
